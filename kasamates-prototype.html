@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>KASA — Kasamates Prototype</title>
+<style>
+  :root{
+    --cream:#F2EBD9; --surface:#F9F4E9; --hi:#FFFDF7;
+    --green-deep:#161E11; --green:#2E3823; --green-accent:#46552F;
+    --ink:#1B1F14; --ink-soft:#5B5C4E; --muted:#8A8775;
+    --line:rgba(27,31,20,.10); --line-strong:rgba(27,31,20,.16);
+    --like:#3C5A2E; --skip:#9A5B43; --gold:#B8923E;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 18px 50px -22px rgba(22,30,17,.55);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;font-family:var(--sans);color:var(--ink);
+    background:
+      radial-gradient(120% 80% at 50% -10%, #ECE3CC 0%, var(--cream) 55%, #E9E0C7 100%);
+    display:flex;align-items:center;justify-content:center;min-height:100dvh;padding:24px;
+  }
+  .stage{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .brandline{font-family:var(--serif);letter-spacing:.32em;font-size:12px;color:var(--ink-soft);text-transform:uppercase}
+  /* ---- phone frame ---- */
+  .phone{
+    width:392px;max-width:94vw;height:812px;max-height:88dvh;
+    background:var(--cream);border-radius:44px;position:relative;overflow:hidden;
+    box-shadow:var(--shadow), 0 0 0 10px #20271b, 0 0 0 12px #0d120a;
+  }
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:26px;
+    background:#0d120a;border-radius:0 0 18px 18px;z-index:60}
+  .viewport{position:absolute;inset:0;border-radius:44px;overflow:hidden}
+  /* ---- screen system ---- */
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;background:var(--cream);
+    animation:fade .32s ease both}
+  .screen.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{width:0}
+  .pad{padding:0 22px}
+  /* ---- typography ---- */
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+  h1.display{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1.08;margin:.25em 0 .15em;letter-spacing:-.01em}
+  h2.display{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.12;margin:0}
+  .sub{color:var(--ink-soft);font-size:15px;line-height:1.45}
+  .tiny{font-size:12.5px;color:var(--muted)}
+  /* ---- controls ---- */
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;
+    border-radius:16px;padding:16px;font-size:16px;font-weight:600;font-family:var(--sans);
+    cursor:pointer;transition:transform .08s ease,opacity .2s}
+  .btn:active{transform:scale(.985)}
+  .btn.primary{background:var(--green);color:var(--cream)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-strong)}
+  .btn.gold{background:var(--gold);color:#241c08}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .field{width:100%;background:var(--hi);border:1px solid var(--line-strong);border-radius:14px;
+    padding:15px 16px;font-size:15px;color:var(--ink);font-family:var(--sans);margin-top:6px}
+  .field:focus{outline:none;border-color:var(--green-accent)}
+  label.lbl{font-size:12.5px;font-weight:600;color:var(--ink-soft);letter-spacing:.02em}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;
+    padding:9px 14px;font-size:13px;color:var(--ink);cursor:pointer;transition:.15s;user-select:none}
+  .chip.on{background:var(--green);color:var(--cream);border-color:var(--green)}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  .divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:18px 0}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  .link{color:var(--green-accent);font-weight:600;cursor:pointer}
+  .pill{display:inline-flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--line);
+    border-radius:999px;padding:5px 11px;font-size:12px;color:var(--ink-soft)}
+  .pill.ok{color:var(--like);border-color:rgba(60,90,46,.3)}
+  .pill.gold{color:#7a5d18;border-color:rgba(184,146,62,.4);background:rgba(184,146,62,.10)}
+  /* ---- splash ---- */
+  #splash{background:radial-gradient(120% 90% at 50% 18%, #20281a 0%, var(--green-deep) 70%);color:var(--cream);
+    align-items:center;justify-content:center;text-align:center}
+  #splash .mark{font-family:var(--serif);font-size:74px;letter-spacing:.16em;font-weight:600;
+    text-indent:.16em;margin-bottom:6px}
+  #splash .tag{letter-spacing:.34em;font-size:11px;text-transform:uppercase;color:#cdc7b2}
+  .enter{margin-top:54px;border:1px solid rgba(242,235,217,.4);color:var(--cream);background:transparent;
+    border-radius:999px;padding:13px 30px;font-size:14px;cursor:pointer;letter-spacing:.04em}
+  .enter:active{transform:scale(.97)}
+  /* ---- top bar ---- */
+  .topbar{padding:54px 22px 10px;display:flex;align-items:center;justify-content:space-between}
+  .topbar .ttl{font-family:var(--serif);font-size:24px;font-weight:600}
+  .iconbtn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:var(--surface);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+  .back{font-size:20px;line-height:1}
+  /* ---- progress ---- */
+  .progress{height:5px;background:var(--line);border-radius:999px;overflow:hidden;margin:0 22px}
+  .progress>i{display:block;height:100%;background:var(--green);border-radius:999px;transition:width .35s ease}
+  /* ---- swipe deck ---- */
+  .deck{flex:1;position:relative;margin:8px 18px 4px}
+  .card{position:absolute;inset:0;background:var(--surface);border-radius:26px;border:1px solid var(--line);
+    box-shadow:0 12px 34px -20px rgba(22,30,17,.55);overflow:hidden;display:flex;flex-direction:column;
+    will-change:transform}
+  .card .photo{flex:1;position:relative;background-size:cover;background-position:center;
+    display:flex;align-items:flex-end}
+  .card .photo::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(to top, rgba(15,19,11,.82) 0%, rgba(15,19,11,.05) 46%)}
+  .card .meta{position:relative;z-index:2;color:#f6f1e2;padding:18px 18px 16px;width:100%}
+  .card .nm{font-family:var(--serif);font-size:25px;font-weight:600}
+  .card .loc{font-size:13.5px;opacity:.9;margin-top:2px}
+  .card .vibes{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .vibe{background:rgba(255,255,255,.16);backdrop-filter:blur(2px);border-radius:999px;padding:4px 10px;font-size:11.5px}
+  .ring{position:absolute;top:14px;right:14px;z-index:3;width:50px;height:50px}
+  .badge{position:absolute;top:16px;left:16px;z-index:3;background:rgba(184,146,62,.92);color:#241c08;
+    font-size:11px;font-weight:700;padding:5px 10px;border-radius:999px;letter-spacing:.03em}
+  .stamp{position:absolute;top:30px;z-index:4;font-family:var(--serif);font-weight:700;font-size:30px;
+    letter-spacing:.08em;padding:6px 16px;border-radius:12px;border:3px solid;opacity:0;transform:rotate(-12deg)}
+  .stamp.like{left:22px;color:var(--like);border-color:var(--like)}
+  .stamp.nope{right:22px;color:var(--skip);border-color:var(--skip)}
+  .blurb{position:relative;z-index:2;font-size:12.5px;line-height:1.4;margin-top:9px;color:#ece6d4;opacity:.92}
+  /* ---- action bar ---- */
+  .actions{display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 0 18px}
+  .act{width:60px;height:60px;border-radius:50%;border:1px solid var(--line);background:var(--hi);
+    display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;
+    box-shadow:0 8px 20px -12px rgba(22,30,17,.5);transition:transform .1s}
+  .act:active{transform:scale(.9)}
+  .act.skip{color:var(--skip)} .act.like{color:var(--like)}
+  .act.star{width:50px;height:50px;font-size:19px;color:var(--gold)}
+  /* ---- bottom nav ---- */
+  .nav{display:flex;border-top:1px solid var(--line);background:var(--surface);padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
+  .nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;
+    color:var(--muted);font-size:10.5px;cursor:pointer;font-weight:600}
+  .nav a .ic{font-size:19px;line-height:1}
+  .nav a.on{color:var(--green)}
+  /* ---- browse grid ---- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px 22px 22px}
+  .gcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer}
+  .gcard .gph{height:120px;background-size:cover;background-position:center;position:relative}
+  .gcard .gpct{position:absolute;top:8px;right:8px;background:rgba(22,30,17,.78);color:var(--cream);
+    font-size:11px;font-weight:700;border-radius:999px;padding:3px 8px}
+  .gcard .gb{padding:10px 12px 12px}
+  .gcard .gn{font-weight:700;font-size:14px}
+  .gcard .gl{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .gcard .gbud{font-size:12px;color:var(--green-accent);font-weight:600;margin-top:6px}
+  /* ---- list / matches ---- */
+  .crow{display:flex;align-items:center;gap:13px;padding:13px 22px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .crow:active{background:var(--surface)}
+  .ava{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;color:var(--cream)}
+  .crow .cn{font-weight:700;font-size:15px}
+  .crow .cm{font-size:13px;color:var(--ink-soft);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+  .unread{margin-left:auto;background:var(--green);color:var(--cream);font-size:11px;font-weight:700;
+    min-width:22px;height:22px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 6px}
+  /* ---- chat ---- */
+  .bubbles{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:9px;background:var(--cream)}
+  .bub{max-width:75%;padding:10px 13px;font-size:14px;line-height:1.4}
+  .bub.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);
+    border-radius:16px 16px 16px 5px;color:var(--ink)}
+  .bub.me{align-self:flex-end;background:var(--green);color:var(--cream);border-radius:16px 16px 5px 16px}
+  .composer{display:flex;gap:9px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--line);background:var(--surface)}
+  .composer input{flex:1;border:1px solid var(--line-strong);border-radius:999px;padding:12px 16px;
+    font-size:14px;background:var(--hi);font-family:var(--sans)}
+  .composer input:focus{outline:none;border-color:var(--green-accent)}
+  .send{width:46px;height:46px;border-radius:50%;border:none;background:var(--green);color:var(--cream);
+    font-size:18px;cursor:pointer;flex:0 0 auto}
+  /* ---- profile ---- */
+  .phead{display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 22px 4px}
+  .pava{width:96px;height:96px;border-radius:50%;background-size:cover;background-position:center;
+    border:3px solid var(--hi);box-shadow:0 8px 22px -12px rgba(22,30,17,.6)}
+  .pname{font-family:var(--serif);font-size:24px;font-weight:600;margin-top:12px}
+  .pverify{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+  .section{background:var(--surface);border:1px solid var(--line);border-radius:20px;margin:14px 22px;padding:18px}
+  .section .stitle{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:2px}
+  .section .sdesc{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  .legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:6px}
+  .legend div{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft)}
+  .legend b{color:var(--ink);font-weight:600}
+  .ltags{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+  .ltag{background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:6px 11px;font-size:12px}
+  /* ---- premium ---- */
+  .promo{background:var(--green);color:var(--cream);border-radius:22px;margin:14px 22px;padding:20px}
+  .promo .benefit{display:flex;gap:9px;align-items:center;font-size:13.5px;margin:7px 0;color:#ece6d4}
+  .promo .benefit .ck{color:var(--gold);font-weight:700}
+  .empty{margin:14px 22px;border:1px solid var(--line);background:var(--surface);border-radius:18px;
+    padding:34px 20px;text-align:center;color:var(--ink-soft)}
+  .empty .e-ic{font-size:30px;opacity:.5}
+  /* ---- match modal ---- */
+  .modal{position:absolute;inset:0;z-index:120;display:none;align-items:center;justify-content:center;
+    background:rgba(13,17,9,.74);backdrop-filter:blur(3px);animation:fade .3s ease both;padding:30px}
+  .modal.show{display:flex}
+  .matchcard{background:var(--cream);border-radius:26px;padding:30px 24px;text-align:center;width:100%;max-width:320px}
+  .matchcard .mt{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--green-deep)}
+  .matchcard .duo{display:flex;justify-content:center;gap:-10px;margin:18px 0 6px}
+  .matchcard .duo .ava{width:74px;height:74px;border:3px solid var(--cream)}
+  .matchcard .duo .ava:nth-child(2){margin-left:-18px}
+  /* sleeping helpers */
+  .hidden{display:none!important}
+  .center{display:flex;align-items:center;justify-content:center;height:100%}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="brandline">Kasamates · interactive prototype</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="viewport" id="viewport">
+
+      <!-- SPLASH -->
+      <section class="screen active" id="splash">
+        <div class="center" style="flex-direction:column">
+          <div class="mark">KASA</div>
+          <div class="tag">Find your housemate</div>
+          <button class="enter" onclick="go('auth')">Get started</button>
+          <div style="position:absolute;bottom:30px;color:#9c9683;font-size:11px;letter-spacing:.18em">DELHI · GURUGRAM · NOIDA</div>
+        </div>
+      </section>
+
+      <!-- AUTH -->
+      <section class="screen" id="auth">
+        <div class="scroll pad">
+          <div style="height:64px"></div>
+          <div class="eyebrow">No brokers. No noise.</div>
+          <h1 class="display">Welcome to<br>Kasamates.</h1>
+          <p class="sub">Verified flatmates across Delhi-NCR, matched on how you actually live.</p>
+          <div style="height:22px"></div>
+          <div id="nameWrap" class="hidden">
+            <label class="lbl">Full name</label>
+            <input class="field" id="f_name" placeholder="Aarav Mehta">
+            <div style="height:12px"></div>
+          </div>
+          <label class="lbl">Email</label>
+          <input class="field" id="f_email" type="email" placeholder="you@email.com">
+          <div style="height:12px"></div>
+          <div id="phoneWrap" class="hidden">
+            <label class="lbl">Phone</label>
+            <input class="field" id="f_phone" placeholder="+91 ·····" inputmode="tel">
+            <div style="height:12px"></div>
+          </div>
+          <label class="lbl">Password</label>
+          <input class="field" id="f_pass" type="password" placeholder="••••••••">
+          <div style="height:20px"></div>
+          <button class="btn primary" id="authBtn" onclick="submitAuth()">Create account</button>
+          <div class="divider">or</div>
+          <button class="btn ghost" onclick="toast('Google sign-in is coming soon')">
+            <span style="font-weight:700">G</span> Continue with Google
+          </button>
+          <p class="tiny" style="margin-top:18px;text-align:center">
+            <span id="authSwap">Already have an account? <span class="link" onclick="toggleAuth()">Sign in</span></span>
+          </p>
+          <div style="height:30px"></div>
+        </div>
+      </section>
+
+      <!-- OTP -->
+      <section class="screen" id="otp">
+        <div class="topbar"><div class="back iconbtn" onclick="go('auth')">‹</div><div></div><div style="width:38px"></div></div>
+        <div class="scroll pad">
+          <div class="eyebrow">Verify email</div>
+          <h1 class="display">Enter the code.</h1>
+          <p class="sub">We sent a 6-digit code to <b id="otpEmail">you@email.com</b>. (Demo code: <b>000000</b>)</p>
+          <div style="height:20px"></div>
+          <input class="field" id="otpInput" inputmode="numeric" maxlength="6"
+            placeholder="••••••" style="letter-spacing:.5em;text-align:center;font-size:22px">
+          <div style="height:18px"></div>
+          <button class="btn primary" onclick="verifyOtp()">Verify & continue</button>
+          <p class="tiny" style="margin-top:16px;text-align:center">
+            Didn't get it? <span class="link" onclick="toast('Code resent')">Resend code</span></p>
+          <p class="tiny" style="text-align:center;color:var(--muted)">Phone verification happens after onboarding.</p>
+        </div>
+      </section>
+
+      <!-- ONBOARDING -->
+      <section class="screen" id="onb">
+        <div class="topbar">
+          <div class="back iconbtn" id="onbBack" onclick="onbPrev()">‹</div>
+          <div class="tiny" id="onbCount">Step 1 of 6</div>
+          <div style="width:38px"></div>
+        </div>
+        <div class="progress"><i id="onbBar" style="width:16%"></i></div>
+        <div class="scroll pad" id="onbBody" style="padding-top:18px"></div>
+        <div class="pad" style="padding-bottom:20px">
+          <button class="btn primary" id="onbNext" onclick="onbNext()">Continue</button>
+        </div>
+      </section>
+
+      <!-- APP SHELL -->
+      <section class="screen" id="app">
+        <div id="tab-discover" class="apptab" style="flex:1;display:flex;flex-direction:column">
+          <div class="topbar"><div class="ttl">Discover</div>
+            <div class="iconbtn" onclick="toast('Filters: budget, area, schedule')">⚙</div></div>
+          <div class="deck" id="deck"></div>
+          <div class="actions">
+            <div class="act skip" onclick="swipe('left')">✕</div>
+            <div class="act star" onclick="superLike()">★</div>
+            <div class="act like" onclick="swipe('right')">♥</div>
+          </div>
+        </div>
+
+        <div id="tab-browse" class="apptab hidden" style="flex:1;display:flex;flex-direction:column">
+          <div class="topbar"><div class="ttl">Browse</div>
+            <div class="iconbtn" onclick="toast('Sorted by compatibility')">⇅</div></div>
+          <div class="scroll"><div class="grid" id="grid"></div></div>
+        </div>
+
+        <div id="tab-matches" class="apptab hidden" style="flex:1;display:flex;flex-direction:column">
+          <div class="topbar"><div class="ttl">Messages</div></div>
+          <div class="scroll" id="convList"></div>
+        </div>
+
+        <div id="tab-activity" class="apptab hidden" style="flex:1;display:flex;flex-direction:column">
+          <div class="topbar"><div class="ttl">Activity</div></div>
+          <div class="scroll">
+            <div class="promo">
+              <div class="eyebrow" style="color:var(--gold)">KASA PLUS</div>
+              <h2 class="display" style="color:var(--cream);margin-top:4px">Move in faster</h2>
+              <div style="height:8px"></div>
+              <div class="benefit"><span class="ck">✓</span> See everyone who liked you</div>
+              <div class="benefit"><span class="ck">✓</span> Unlimited messages — free gets 5</div>
+              <div class="benefit"><span class="ck">✓</span> Priority placement in discovery</div>
+              <div class="benefit"><span class="ck">✓</span> AI compatibility breakdowns</div>
+              <div style="height:16px"></div>
+              <button class="btn gold" onclick="toast('Billing is not enabled in this demo')">Upgrade — coming soon</button>
+            </div>
+            <h2 class="display" style="margin:18px 22px 0;font-size:20px">Recent activity</h2>
+            <div class="empty">
+              <div class="e-ic">🔔</div>
+              <div style="font-family:var(--serif);font-size:17px;color:var(--ink);margin-top:8px">No activity yet</div>
+              <div class="tiny" style="margin-top:4px">Keep swiping — likes and visits show up here.</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-profile" class="apptab hidden" style="flex:1;display:flex;flex-direction:column">
+          <div class="scroll" id="profileBody"></div>
+        </div>
+
+        <nav class="nav" id="bottomNav">
+          <a class="on" data-tab="discover" onclick="tab('discover')"><span class="ic">⌂</span>Discover</a>
+          <a data-tab="browse" onclick="tab('browse')"><span class="ic">▦</span>Browse</a>
+          <a data-tab="matches" onclick="tab('matches')"><span class="ic">♡</span>Matches</a>
+          <a data-tab="activity" onclick="tab('activity')"><span class="ic">◎</span>Activity</a>
+          <a data-tab="profile" onclick="tab('profile')"><span class="ic">☻</span>Profile</a>
+        </nav>
+      </section>
+
+      <!-- CHAT -->
+      <section class="screen" id="chat">
+        <div class="topbar" style="padding-bottom:14px;border-bottom:1px solid var(--line)">
+          <div class="back iconbtn" onclick="go('app')">‹</div>
+          <div class="ttl" id="chatName" style="font-size:18px">Chat</div>
+          <div style="width:38px"></div>
+        </div>
+        <div class="bubbles" id="bubbles"></div>
+        <div class="composer">
+          <input id="chatInput" placeholder="Message…" onkeydown="if(event.key==='Enter')sendMsg()">
+          <button class="send" onclick="sendMsg()">➤</button>
+        </div>
+      </section>
+
+      <!-- MATCH MODAL -->
+      <div class="modal" id="matchModal">
+        <div class="matchcard">
+          <div class="eyebrow" style="color:var(--gold)">You both said yes</div>
+          <div class="mt">It's a match!</div>
+          <div class="duo">
+            <div class="ava" id="meAva" style="background:var(--green-accent)">A</div>
+            <div class="ava" id="themAva"></div>
+          </div>
+          <p class="sub" id="matchLine" style="margin:6px 0 18px">You and Riya are compatible.</p>
+          <button class="btn primary" onclick="openChatFromMatch()">Send a message</button>
+          <div style="height:9px"></div>
+          <button class="btn ghost" onclick="closeMatch()">Keep swiping</button>
+        </div>
+      </div>
+
+    </div><!-- /viewport -->
+  </div><!-- /phone -->
+  <div id="toast" style="position:fixed;bottom:26px;background:var(--green-deep);color:var(--cream);
+    padding:11px 18px;border-radius:999px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:200"></div>
+</div>
+
+<script>
+/* ----------------------- mock data ----------------------- */
+const PHOTOS = {
+  riya:"https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=640&q=70&auto=format&fit=crop",
+  kabir:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=640&q=70&auto=format&fit=crop",
+  meera:"https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=640&q=70&auto=format&fit=crop",
+  arjun:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=640&q=70&auto=format&fit=crop",
+  sara:"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=640&q=70&auto=format&fit=crop",
+  dev:"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=640&q=70&auto=format&fit=crop"
+};
+const PEOPLE = [
+  {id:1,name:"Riya",age:24,area:"Sector 49, Gurugram",budget:"₹14–18k",score:92,verified:true,
+   vibes:["Early riser","Veg kitchen","Tidy"],blurb:"Designer who cooks on Sundays and guards quiet weeknights. Looking for an easy, clean co-tenant.",
+   fp:{Sleep:.82,Diet:.85,Noise:.3,Clean:.86,Social:.55,Guests:.35},photo:PHOTOS.riya,init:"R"},
+  {id:2,name:"Kabir",age:27,area:"Indirapuram, Ghaziabad",budget:"₹10–13k",score:78,verified:true,
+   vibes:["Night owl","Gym","Gamer"],blurb:"Product analyst, late hours, headphones always on. Chill flat, occasional friends over.",
+   fp:{Sleep:.25,Diet:.3,Noise:.6,Clean:.62,Social:.9,Guests:.7},photo:PHOTOS.kabir,init:"K"},
+  {id:3,name:"Meera",age:23,area:"Sector 62, Noida",budget:"₹12–15k",score:88,verified:false,
+   vibes:["Plant mom","Vegan","Reader"],blurb:"Grad student, plant-filled balcony, slow mornings with filter coffee. Calm home is everything.",
+   fp:{Sleep:.7,Diet:1,Noise:.2,Clean:.8,Social:.4,Guests:.25},photo:PHOTOS.meera,init:"M"},
+  {id:4,name:"Arjun",age:29,area:"DLF Phase 3, Gurugram",budget:"₹18–22k",score:71,verified:true,
+   vibes:["Foodie","Host","Cyclist"],blurb:"Consultant who loves a full table. Happy to split groceries and cook for the flat.",
+   fp:{Sleep:.55,Diet:.3,Noise:.55,Clean:.7,Social:.9,Guests:.9},photo:PHOTOS.arjun,init:"A"},
+  {id:5,name:"Sara",age:25,area:"Lajpat Nagar, Delhi",budget:"₹15–19k",score:84,verified:true,
+   vibes:["Yoga","Eggetarian","Minimal"],blurb:"Marketing lead, 6am yoga, in bed by 11. Minimal stuff, maximal calm.",
+   fp:{Sleep:.9,Diet:.6,Noise:.25,Clean:.9,Social:.5,Guests:.3},photo:PHOTOS.sara,init:"S"},
+  {id:6,name:"Dev",age:26,area:"Sector 18, Noida",budget:"₹11–14k",score:80,verified:false,
+   vibes:["Musician","Non-veg","Social"],blurb:"Sound engineer, practices with headphones. Easygoing, loves a weekend jam.",
+   fp:{Sleep:.4,Diet:.3,Noise:.5,Clean:.6,Social:.85,Guests:.6},photo:PHOTOS.dev,init:"D"}
+];
+const ME = {name:"Aarav", age:26, area:"Sector 49, Gurugram", budget:"₹12–16k", init:"A",
+  fp:{Sleep:.78,Diet:.85,Noise:.35,Clean:.82,Social:.55,Guests:.4}};
+const AXES=["Sleep","Diet","Noise","Clean","Social","Guests"];
+
+let convos = [
+  {id:1, last:"Sounds perfect — when can I see the place?", unread:2,
+   thread:[["them","Hey Aarav! Saw we matched 🌿"],["them","Your profile says veg kitchen — same here."],["me","Yes! Non-negotiable for me 😄"],["them","Sounds perfect — when can I see the place?"]]},
+  {id:5, last:"6am yoga buddy? 🧘", unread:0,
+   thread:[["me","Hi Sara, the early-riser thing got me"],["them","Finally someone who gets it"],["them","6am yoga buddy? 🧘"]]}
+];
+
+/* ----------------------- navigation ----------------------- */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector('#'+id+' .scroll')?.scrollTo(0,0);
+}
+function tab(name){
+  document.querySelectorAll('.apptab').forEach(t=>t.classList.add('hidden'));
+  document.getElementById('tab-'+name).classList.remove('hidden');
+  document.querySelectorAll('#bottomNav a').forEach(a=>a.classList.toggle('on',a.dataset.tab===name));
+  if(name==='browse')renderGrid();
+  if(name==='matches')renderConvos();
+  if(name==='profile')renderProfile();
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity=1;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity=0,1900);}
+
+/* ----------------------- auth ----------------------- */
+let isRegister=true;
+function toggleAuth(){
+  isRegister=!isRegister;
+  document.getElementById('nameWrap').classList.toggle('hidden',!isRegister);
+  document.getElementById('phoneWrap').classList.toggle('hidden',!isRegister);
+  document.getElementById('authBtn').textContent=isRegister?'Create account':'Sign in';
+  document.getElementById('authSwap').innerHTML=isRegister
+    ? `Already have an account? <span class="link" onclick="toggleAuth()">Sign in</span>`
+    : `New here? <span class="link" onclick="toggleAuth()">Create account</span>`;
+}
+function submitAuth(){
+  const email=document.getElementById('f_email').value||'you@email.com';
+  if(isRegister){document.getElementById('otpEmail').textContent=email;go('otp');}
+  else { go('app'); tab('discover'); }   // returning users skip onboarding in the demo
+}
+function verifyOtp(){
+  const v=document.getElementById('otpInput').value;
+  if(v && v!=='000000'){toast('Demo code is 000000');return;}
+  buildOnboarding(); go('onb');
+}
+
+/* ----------------------- onboarding ----------------------- */
+const STEPS=[
+  {t:"The basics",d:"Tell us who you are.",fields:[
+    {k:"name",label:"Preferred name",type:"text",ph:"Aarav"},
+    {k:"age",label:"Age",type:"text",ph:"26"},
+    {k:"gender",label:"Gender",type:"single",opts:["Woman","Man","Non-binary","Prefer not to say"]}]},
+  {t:"What you need",d:"Room or roommate — and your budget.",fields:[
+    {k:"listing",label:"I'm looking to…",type:"single",opts:["Find a room","Find a flatmate for my place","Either works"]},
+    {k:"budget",label:"Monthly budget (₹)",type:"single",opts:["8–12k","12–16k","16–20k","20k+"]},
+    {k:"area",label:"Preferred areas",type:"multi",opts:["Gurugram","Noida","Ghaziabad","South Delhi","Dwarka"]}]},
+  {t:"Your clock",d:"When are you up and about?",fields:[
+    {k:"sleep",label:"Bedtime",type:"single",opts:["Before 10pm","10–12","12–2am","After 2am"]},
+    {k:"wake",label:"Wake up",type:"single",opts:["Before 6am","6–8am","8–10am","After 10am"]}]},
+  {t:"Daily habits",d:"The little things that decide a flat.",fields:[
+    {k:"diet",label:"Kitchen",type:"single",opts:["Vegan","Vegetarian","Eggetarian","Non-veg"]},
+    {k:"clean",label:"Cleanliness",type:"single",opts:["Relaxed","Average","Tidy","Spotless"]},
+    {k:"smoke",label:"Smoking",type:"single",opts:["No","Outside only","Yes"]}]},
+  {t:"Your space",d:"The vibe you're after at home.",fields:[
+    {k:"aesthetic",label:"Pick what feels like home",type:"multi",
+     opts:["Minimal","Plant-filled","Cozy","Bright","Arty","Tidy & neutral"]}]},
+  {t:"Living energy",d:"How social is your ideal home?",fields:[
+    {k:"social",label:"You're more…",type:"single",opts:["Introvert","Ambivert","Extrovert"]},
+    {k:"guests",label:"Guests over",type:"single",opts:["Rarely","Occasionally","Frequently"]},
+    {k:"vibe",label:"Describe your ideal flatmate",type:"multi",
+     opts:["Quiet","Friendly","Independent","Shares meals","Splits chores"]}]}
+];
+let onbStep=0; const onbData={};
+function buildOnboarding(){onbStep=0;renderStep();}
+function renderStep(){
+  const s=STEPS[onbStep];
+  document.getElementById('onbCount').textContent=`Step ${onbStep+1} of 6`;
+  document.getElementById('onbBar').style.width=((onbStep+1)/6*100)+'%';
+  document.getElementById('onbBack').style.visibility=onbStep===0?'hidden':'visible';
+  document.getElementById('onbNext').textContent=onbStep===5?'Finish':'Continue';
+  let h=`<div class="eyebrow">Step ${onbStep+1}</div><h1 class="display">${s.t}</h1><p class="sub">${s.d}</p><div style="height:18px"></div>`;
+  s.fields.forEach(f=>{
+    h+=`<div style="margin-bottom:16px"><label class="lbl">${f.label}</label>`;
+    if(f.type==='text'){
+      h+=`<input class="field" data-k="${f.k}" value="${onbData[f.k]||''}" placeholder="${f.ph||''}">`;
+    }else{
+      h+=`<div class="chips" data-k="${f.k}" data-multi="${f.type==='multi'}">`;
+      f.opts.forEach(o=>{const on=isSel(f,o)?'on':'';h+=`<span class="chip ${on}" onclick="pick(this,'${f.k}',${f.type==='multi'})">${o}</span>`;});
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  });
+  document.getElementById('onbBody').innerHTML=h;
+  document.getElementById('onbBody').scrollTo(0,0);
+}
+function isSel(f,o){const v=onbData[f.k];return f.type==='multi'?(v||[]).includes(o):v===o;}
+function pick(el,k,multi){
+  if(multi){const set=new Set(onbData[k]||[]);set.has(el.textContent)?set.delete(el.textContent):set.add(el.textContent);
+    onbData[k]=[...set];el.classList.toggle('on');}
+  else{onbData[k]=el.textContent;el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+}
+function onbPrev(){if(onbStep>0){onbStep--;renderStep();}}
+function onbNext(){
+  document.querySelectorAll('#onbBody input').forEach(i=>onbData[i.dataset.k]=i.value);
+  if(onbStep<5){onbStep++;renderStep();}
+  else{ if(onbData.name) ME.name=onbData.name; go('app'); tab('discover'); toast('Welcome to Kasamates 🌿'); }
+}
+
+/* ----------------------- discover deck ----------------------- */
+let queue=[]; 
+function initDeck(){queue=PEOPLE.map(p=>p.id);renderDeck();}
+function renderDeck(){
+  const deck=document.getElementById('deck');deck.innerHTML='';
+  if(queue.length===0){
+    deck.innerHTML=`<div class="center" style="flex-direction:column;text-align:center;color:var(--ink-soft);padding:20px">
+      <div style="font-size:34px">🏡</div>
+      <div style="font-family:var(--serif);font-size:21px;color:var(--ink);margin-top:8px">You're all caught up</div>
+      <div class="tiny" style="margin-top:6px;max-width:220px">New verified flatmates join daily. Check back soon.</div>
+      <button class="btn ghost" style="margin-top:16px;width:auto;padding:12px 22px" onclick="initDeck()">Reset deck</button></div>`;
+    return;
+  }
+  // render up to 2 cards, top one last (on top)
+  const show=queue.slice(0,2).reverse();
+  show.forEach((id,idx)=>{
+    const p=PEOPLE.find(x=>x.id===id);
+    const isTop=idx===show.length-1;
+    const scale=isTop?1:0.96, ty=isTop?0:10;
+    const c=document.createElement('div');
+    c.className='card';c.dataset.id=id;
+    c.style.transform=`translateY(${ty}px) scale(${scale})`;
+    c.innerHTML=`
+      <div class="photo" style="background-image:url('${p.photo}')">
+        ${p.verified?`<div class="badge">✓ Verified</div>`:''}
+        ${ring(p.score)}
+        <div class="stamp like">LIKE</div><div class="stamp nope">NOPE</div>
+        <div class="meta">
+          <div class="nm">${p.name}, ${p.age}</div>
+          <div class="loc">📍 ${p.area} · ${p.budget}</div>
+          <div class="blurb">${p.blurb}</div>
+          <div class="vibes">${p.vibes.map(v=>`<span class="vibe">${v}</span>`).join('')}</div>
+        </div>
+      </div>`;
+    deck.appendChild(c);
+    if(isTop)attachDrag(c);
+  });
+}
+function ring(score){
+  const r=20,c=2*Math.PI*r,off=c*(1-score/100);
+  return `<svg class="ring" viewBox="0 0 50 50">
+    <circle cx="25" cy="25" r="${r}" fill="rgba(15,19,11,.55)" stroke="rgba(255,255,255,.25)" stroke-width="4"/>
+    <circle cx="25" cy="25" r="${r}" fill="none" stroke="#cde0b6" stroke-width="4" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 25 25)"/>
+    <text x="25" y="29" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">${score}</text></svg>`;
+}
+let drag=null;
+function attachDrag(card){
+  let sx=0,sy=0,dx=0,active=false;
+  const down=e=>{active=true;const p=pt(e);sx=p.x;sy=p.y;card.style.transition='none';};
+  const move=e=>{if(!active)return;const p=pt(e);dx=p.x-sx;const dy=p.y-sy;
+    const rot=dx/18;card.style.transform=`translate(${dx}px,${dy}px) rotate(${rot}deg)`;
+    card.querySelector('.stamp.like').style.opacity=Math.max(0,Math.min(1,dx/90));
+    card.querySelector('.stamp.nope').style.opacity=Math.max(0,Math.min(1,-dx/90));};
+  const up=()=>{if(!active)return;active=false;card.style.transition='transform .3s ease,opacity .3s';
+    if(dx>110)flyOut(card,'right');else if(dx<-110)flyOut(card,'left');
+    else{card.style.transform='';card.querySelectorAll('.stamp').forEach(s=>s.style.opacity=0);}dx=0;};
+  card.addEventListener('mousedown',down);window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+  card.addEventListener('touchstart',down,{passive:true});card.addEventListener('touchmove',move,{passive:true});card.addEventListener('touchend',up);
+}
+function pt(e){return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
+function swipe(dir){const top=document.querySelector('#deck .card:last-child');if(top)flyOut(top,dir==='right'?'right':'left');}
+function superLike(){const top=document.querySelector('#deck .card:last-child');if(!top)return;
+  const id=+top.dataset.id;toast('Super liked ★');flyOut(top,'right',true,id);}
+function flyOut(card,dir,sup,forceId){
+  const id=+card.dataset.id;
+  card.style.transition='transform .35s ease,opacity .35s';
+  card.style.transform=`translate(${dir==='right'?500:-500}px,-40px) rotate(${dir==='right'?22:-22}deg)`;
+  card.style.opacity=0;
+  setTimeout(()=>{
+    queue=queue.filter(q=>q!==id);renderDeck();
+    if(dir==='right')maybeMatch(id,sup);
+  },300);
+}
+function maybeMatch(id,sup){
+  const p=PEOPLE.find(x=>x.id===id);
+  // high compatibility or super-like => match
+  if(sup||p.score>=84){showMatch(p);}
+}
+
+/* ----------------------- match modal ----------------------- */
+let pendingMatch=null;
+function showMatch(p){
+  pendingMatch=p;
+  document.getElementById('meAva').textContent=ME.init;
+  const them=document.getElementById('themAva');
+  them.style.backgroundImage=`url('${p.photo}')`;them.textContent='';
+  document.getElementById('matchLine').textContent=`You and ${p.name} are ${p.score}% compatible.`;
+  document.getElementById('matchModal').classList.add('show');
+  if(!convos.find(c=>c.id===p.id))
+    convos.unshift({id:p.id,last:"You matched — say hi 👋",unread:1,thread:[]});
+}
+function closeMatch(){document.getElementById('matchModal').classList.remove('show');pendingMatch=null;}
+function openChatFromMatch(){const p=pendingMatch;closeMatch();go('app');tab('matches');openChat(p.id);}
+
+/* ----------------------- browse grid ----------------------- */
+function renderGrid(){
+  document.getElementById('grid').innerHTML=PEOPLE.map(p=>`
+    <div class="gcard" onclick="peek(${p.id})">
+      <div class="gph" style="background-image:url('${p.photo}')"><div class="gpct">${p.score}%</div></div>
+      <div class="gb"><div class="gn">${p.name}, ${p.age}</div>
+        <div class="gl">${p.area.split(',')[0]}</div>
+        <div class="gbud">${p.budget}/mo</div></div>
+    </div>`).join('');
+}
+function peek(id){const p=PEOPLE.find(x=>x.id===id);toast(`${p.name} · ${p.score}% match · ${p.budget}`);}
+
+/* ----------------------- matches + chat ----------------------- */
+function renderConvos(){
+  const list=document.getElementById('convList');
+  if(convos.length===0){list.innerHTML=`<div class="empty"><div class="e-ic">💬</div>
+    <div style="font-family:var(--serif);font-size:17px;color:var(--ink);margin-top:8px">No matches yet</div>
+    <div class="tiny" style="margin-top:4px">Like someone in Discover to start chatting.</div></div>`;return;}
+  list.innerHTML=convos.map(c=>{const p=PEOPLE.find(x=>x.id===c.id);
+    return `<div class="crow" onclick="openChat(${c.id})">
+      <div class="ava" style="background-image:url('${p.photo}');background-color:var(--green-accent)"></div>
+      <div style="min-width:0"><div class="cn">${p.name}</div><div class="cm">${c.last}</div></div>
+      ${c.unread?`<div class="unread">${c.unread}</div>`:''}</div>`;}).join('');
+}
+let activeChat=null;
+function openChat(id){
+  const c=convos.find(x=>x.id===id);const p=PEOPLE.find(x=>x.id===id);
+  if(!c)return;activeChat=id;c.unread=0;
+  document.getElementById('chatName').textContent=p.name;
+  renderBubbles();go('chat');
+}
+function renderBubbles(){
+  const c=convos.find(x=>x.id===activeChat);
+  const b=document.getElementById('bubbles');
+  b.innerHTML=c.thread.length? c.thread.map(m=>`<div class="bub ${m[0]}">${m[1]}</div>`).join('')
+    : `<div class="tiny" style="text-align:center;margin:auto">Say hello 👋</div>`;
+  b.scrollTop=b.scrollHeight;
+}
+function sendMsg(){
+  const inp=document.getElementById('chatInput');const v=inp.value.trim();if(!v)return;
+  const c=convos.find(x=>x.id===activeChat);c.thread.push(["me",v]);c.last=v;inp.value='';renderBubbles();
+  const p=PEOPLE.find(x=>x.id===activeChat);
+  setTimeout(()=>{c.thread.push(["them",reply(p)]);c.last=c.thread.at(-1)[1];renderBubbles();},900);
+}
+function reply(p){const r=["Haha sounds good!","When works for a viewing?","Same page on that 🙂","Love that. Tell me more?","Cool — sending you the address."];
+  return r[Math.floor(Math.random()*r.length)];}
+
+/* ----------------------- profile + fingerprint ----------------------- */
+function renderProfile(){
+  const fpSvg=radar(ME.fp,150);
+  document.getElementById('profileBody').innerHTML=`
+    <div style="height:54px"></div>
+    <div class="phead">
+      <div class="pava" style="background:var(--green-accent);display:flex;align-items:center;justify-content:center;
+        font-family:var(--serif);font-size:36px;color:var(--cream)">${ME.init}</div>
+      <div class="pname">${ME.name}, ${ME.age}</div>
+      <div class="pverify">
+        <span class="pill ok">✓ Email</span><span class="pill ok">✓ Phone</span>
+        <span class="pill gold">★ Verified flatmate</span><span class="pill">Free plan</span>
+      </div>
+    </div>
+    <div class="section">
+      <div class="stitle">Compatibility Fingerprint</div>
+      <div class="sdesc">The six dimensions Kasamates matches you on.</div>
+      <div style="display:flex;justify-content:center">${fpSvg}</div>
+      <div class="legend">
+        ${AXES.map(a=>`<div><span>${a}</span><b>${Math.round(ME.fp[a]*100)}</b></div>`).join('')}
+      </div>
+    </div>
+    <div class="section">
+      <div class="stitle">About</div>
+      <p class="sub" style="margin:6px 0 0">Sector 49 local, work in design. Veg kitchen, early to bed, weekend cook. Looking for a clean, calm flat with someone easy to live with.</p>
+    </div>
+    <div class="section">
+      <div class="stitle">Lifestyle</div>
+      <div class="ltags" style="margin-top:8px">
+        <span class="ltag">${ME.budget}/mo</span><span class="ltag">Find a room</span>
+        <span class="ltag">Vegetarian</span><span class="ltag">Non-smoker</span>
+        <span class="ltag">Early riser</span><span class="ltag">Tidy</span>
+        <span class="ltag">Ambivert</span><span class="ltag">Guests rarely</span>
+      </div>
+    </div>
+    <div class="pad" style="padding-bottom:24px">
+      <button class="btn primary" onclick="toast('Edit re-submits onboarding steps')">Edit profile</button>
+      <div style="height:10px"></div>
+      <button class="btn ghost" onclick="signOut()">Sign out</button>
+    </div>`;
+}
+/* hexagon radar — the signature element */
+function radar(fp,size){
+  const cx=size/2,cy=size/2,R=size/2-26,n=AXES.length;
+  const ang=i=>(-Math.PI/2)+(i*2*Math.PI/n);
+  const ptOn=(i,r)=>[cx+Math.cos(ang(i))*r, cy+Math.sin(ang(i))*r];
+  let grid='';
+  [0.25,0.5,0.75,1].forEach(g=>{
+    const pts=AXES.map((_,i)=>ptOn(i,R*g).join(',')).join(' ');
+    grid+=`<polygon points="${pts}" fill="none" stroke="rgba(27,31,20,.12)" stroke-width="1"/>`;
+  });
+  let spokes='';AXES.forEach((_,i)=>{const[x,y]=ptOn(i,R);spokes+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(27,31,20,.12)"/>`;});
+  const dataPts=AXES.map((a,i)=>ptOn(i,R*fp[a]).join(',')).join(' ');
+  let dots='';AXES.forEach((a,i)=>{const[x,y]=ptOn(i,R*fp[a]);dots+=`<circle cx="${x}" cy="${y}" r="3" fill="#2E3823"/>`;});
+  let labels='';AXES.forEach((a,i)=>{const[x,y]=ptOn(i,R+15);
+    labels+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5B5C4E">${a}</text>`;});
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    ${grid}${spokes}
+    <polygon points="${dataPts}" fill="rgba(46,56,35,.18)" stroke="#2E3823" stroke-width="2" stroke-linejoin="round"/>
+    ${dots}${labels}</svg>`;
+}
+function signOut(){onbStep=0;isRegister=true;go('splash');toast('Signed out');}
+
+/* ----------------------- boot ----------------------- */
+initDeck();
+</script>
+</body>
+</html>
