@@ -1,0 +1,461 @@
+[
+  {
+    "id": "q1",
+    "group": "money",
+    "weight": 3,
+    "type": "ordinal",
+    "text": "How would you describe your spending style?",
+    "options": [
+      {
+        "label": "I'm pretty careful with money, every rupee counts",
+        "value": 0.0
+      },
+      {
+        "label": "I budget mindfully but don't stress over small things",
+        "value": 0.33
+      },
+      {
+        "label": "I spend when it feels right, save when I can",
+        "value": 0.67
+      },
+      {
+        "label": "Money is meant to be enjoyed, I don't overthink it",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q2",
+    "group": "money",
+    "weight": 4,
+    "type": "ordinal",
+    "text": "How do you prefer to handle shared expenses (rent, electricity, wifi)?",
+    "options": [
+      {
+        "label": "Exact split always, I'll send you a spreadsheet",
+        "value": 0.0
+      },
+      {
+        "label": "Close enough is fine, we'll settle it loosely",
+        "value": 0.45
+      },
+      {
+        "label": "Whoever has it pays, we'll figure it out",
+        "value": 0.75
+      },
+      {
+        "label": "I'm happy to manage everything if you transfer your share",
+        "value": 0.3
+      }
+    ]
+  },
+  {
+    "id": "q3",
+    "group": "sharing",
+    "weight": 3,
+    "type": "ordinal",
+    "text": "How do you feel about sharing personal items (shampoo, oil, spices, chargers)?",
+    "options": [
+      {
+        "label": "I'd rather we each have our own stuff, no awkwardness",
+        "value": 0.0
+      },
+      {
+        "label": "I don't mind occasionally, but ask first",
+        "value": 0.33
+      },
+      {
+        "label": "Most things are fine to share, just don't finish it",
+        "value": 0.67
+      },
+      {
+        "label": "What's mine is yours, mi casa es su casa",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q4",
+    "group": "presence",
+    "weight": 4,
+    "type": "ordinal",
+    "text": "How often are you actually home?",
+    "options": [
+      {
+        "label": "Rarely, I'm out most of the day and crash late",
+        "value": 0.0
+      },
+      {
+        "label": "Home for meals and evenings, out otherwise",
+        "value": 0.33
+      },
+      {
+        "label": "I work from home or spend most of my time here",
+        "value": 0.67
+      },
+      {
+        "label": "Almost always around, home is my comfort zone",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q5",
+    "group": "cleanliness",
+    "weight": 5,
+    "type": "ordinal",
+    "text": "How do you think cleaning should work?",
+    "options": [
+      {
+        "label": "I clean my space, you clean yours, simple",
+        "value": 0.1
+      },
+      {
+        "label": "We keep it clean casually, no formal system needed",
+        "value": 0.4
+      },
+      {
+        "label": "A proper rotation works best so it's fair",
+        "value": 0.75
+      },
+      {
+        "label": "I'd just split the cost of hiring help",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q6",
+    "group": "guests",
+    "weight": 5,
+    "type": "ordinal",
+    "text": "How do you feel about friends, guests and partners staying over regularly?",
+    "options": [
+      {
+        "label": "I'd prefer the flat stays just us",
+        "value": 0.0
+      },
+      {
+        "label": "Occasionally is fine, but give me a heads up",
+        "value": 0.33
+      },
+      {
+        "label": "Fine as long as it's not every single night",
+        "value": 0.67
+      },
+      {
+        "label": "Bring whoever, whenever, the more the merrier",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q7",
+    "group": "stability",
+    "weight": 3,
+    "type": "ordinal",
+    "text": "How long are you planning to stay?",
+    "options": [
+      {
+        "label": "Long-term, at least a year or two",
+        "value": 0.0
+      },
+      {
+        "label": "Probably stable for a year, then we'll see",
+        "value": 0.33
+      },
+      {
+        "label": "Might move in 6-12 months",
+        "value": 0.67
+      },
+      {
+        "label": "Honestly uncertain, life's unpredictable right now",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q8",
+    "group": "fitness",
+    "weight": 1,
+    "type": "ordinal",
+    "text": "What does fitness look like in your life?",
+    "options": [
+      {
+        "label": "Not really my thing",
+        "value": 0.0
+      },
+      {
+        "label": "I try to stay active when motivated",
+        "value": 0.33
+      },
+      {
+        "label": "Pretty consistent, gym/runs/yoga most days",
+        "value": 0.67
+      },
+      {
+        "label": "Very regimented, early mornings, meal prep",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q9",
+    "group": "vibe",
+    "weight": 1,
+    "type": "nominal",
+    "text": "If someone shuffled your playlist right now, what would come on?",
+    "options": [
+      {
+        "label": "Something trending, pop, phonk, viral",
+        "value": 0
+      },
+      {
+        "label": "Bollywood, desi beats, old school hits",
+        "value": 1
+      },
+      {
+        "label": "Indie, lo-fi, ambient",
+        "value": 2
+      },
+      {
+        "label": "A total mess, genre has no meaning",
+        "value": 3
+      }
+    ]
+  },
+  {
+    "id": "q10",
+    "group": "routine",
+    "weight": 3,
+    "type": "ordinal",
+    "text": "What does a typical weekday morning look like for you?",
+    "options": [
+      {
+        "label": "Up early, out fast, barely home",
+        "value": 0.0
+      },
+      {
+        "label": "Slow morning, coffee, quiet time before heading out",
+        "value": 0.33
+      },
+      {
+        "label": "I work from home so mornings are relaxed but I'm around",
+        "value": 0.67
+      },
+      {
+        "label": "Late riser, mornings are not my thing",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q11",
+    "group": "noise",
+    "weight": 5,
+    "type": "ordinal",
+    "text": "How do you feel about noise at home?",
+    "options": [
+      {
+        "label": "I like it quiet most of the time",
+        "value": 0.0
+      },
+      {
+        "label": "Background noise is fine, no loud calls/music",
+        "value": 0.33
+      },
+      {
+        "label": "I don't mind noise, pretty easy-going",
+        "value": 0.67
+      },
+      {
+        "label": "I'm probably the loud one, music, calls, the works",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q12",
+    "group": "sleep",
+    "weight": 5,
+    "type": "ordinal",
+    "text": "When do you usually go to sleep?",
+    "options": [
+      {
+        "label": "Before 11, early riser",
+        "value": 0.0
+      },
+      {
+        "label": "Midnight-ish, pretty standard",
+        "value": 0.33
+      },
+      {
+        "label": "Between 1-2 AM regularly",
+        "value": 0.67
+      },
+      {
+        "label": "Whatever time I pass out, no schedule",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q13",
+    "group": "kitchen",
+    "weight": 3,
+    "type": "ordinal",
+    "text": "How do you feel about cooking and kitchen use?",
+    "options": [
+      {
+        "label": "I barely cook, mostly order in or eat out",
+        "value": 0.0
+      },
+      {
+        "label": "I cook sometimes, clean up but maybe not immediately",
+        "value": 0.45
+      },
+      {
+        "label": "I cook often and like a clean kitchen after every use",
+        "value": 0.8
+      },
+      {
+        "label": "I love cooking and happily make extra for both of us",
+        "value": 1.0
+      }
+    ]
+  },
+  {
+    "id": "q14",
+    "group": "conflict",
+    "weight": 4,
+    "type": "ordinal",
+    "text": "How do you handle conflict or tension with someone you live with?",
+    "options": [
+      {
+        "label": "I address it directly and sort it out quickly",
+        "value": 1.0
+      },
+      {
+        "label": "I need a little time, then bring it up calmly",
+        "value": 0.7
+      },
+      {
+        "label": "I tend to avoid confrontation and hope it smooths over",
+        "value": 0.2
+      },
+      {
+        "label": "Never really thought about it, hasn't come up",
+        "value": 0.45
+      }
+    ]
+  },
+  {
+    "id": "q15",
+    "group": "stress",
+    "weight": 2,
+    "type": "nominal",
+    "text": "How do you typically deal with stress?",
+    "options": [
+      {
+        "label": "I go quiet and need space",
+        "value": 0
+      },
+      {
+        "label": "I vent a little but sort myself out quickly",
+        "value": 1
+      },
+      {
+        "label": "I talk it through with someone I'm comfortable with",
+        "value": 2
+      },
+      {
+        "label": "I distract myself, food, shows, going out",
+        "value": 3
+      }
+    ]
+  },
+  {
+    "id": "q16",
+    "group": "presence",
+    "weight": 3,
+    "type": "ordinal",
+    "text": "What's your relationship with work or study from home?",
+    "options": [
+      {
+        "label": "Fully office-based, barely home during the day",
+        "value": 0.0
+      },
+      {
+        "label": "Hybrid, home a few days a week",
+        "value": 0.4
+      },
+      {
+        "label": "Mostly remote, home is basically my workspace",
+        "value": 1.0
+      },
+      {
+        "label": "Irregular, depends on the week",
+        "value": 0.5
+      }
+    ]
+  },
+  {
+    "id": "q17",
+    "group": "aesthetics",
+    "weight": 2,
+    "type": "ordinal",
+    "text": "How important is it that your home feels a certain way (decor, vibe)?",
+    "options": [
+      {
+        "label": "Very, I care a lot about how the space looks/feels",
+        "value": 1.0
+      },
+      {
+        "label": "Somewhat, I have preferences but I'm open",
+        "value": 0.55
+      },
+      {
+        "label": "Not really, functional is enough",
+        "value": 0.0
+      },
+      {
+        "label": "I'd love to collaborate and make it look great together",
+        "value": 0.85
+      }
+    ]
+  },
+  {
+    "id": "q_orientation",
+    "group": "orientation",
+    "weight": 0,
+    "type": "nominal",
+    "optional": true,
+    "text": "Sexual orientation (optional — shown on your profile, not used to score matches)",
+    "options": [
+      {
+        "label": "Straight",
+        "value": 0
+      },
+      {
+        "label": "Gay / Lesbian",
+        "value": 1
+      },
+      {
+        "label": "Bisexual",
+        "value": 2
+      },
+      {
+        "label": "Asexual",
+        "value": 3
+      },
+      {
+        "label": "Queer / Other",
+        "value": 4
+      },
+      {
+        "label": "Prefer not to say",
+        "value": 5
+      }
+    ]
+  }
+]
